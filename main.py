@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import os
 import google.generativeai as genai
 from PIL import Image
 
@@ -11,7 +12,11 @@ def load_image(image_path):
     return image
 
 def process_image_with_gemini(image_path):  
-    genai.configure(api_key='AIzaSyDPgushLmyY8BZDyAK2DHh7Bzgk_CNPeB4')
+    api_key = os.getenv('GOOGLE_API_KEY')  
+    if not api_key:
+        raise ValueError("API key not found. Please set the GOOGLE_API_KEY environment variable.")
+    
+    genai.configure(api_key=api_key)
     image = Image.open(image_path)
     model = genai.GenerativeModel('gemini-1.5-flash')
     response = model.generate_content(["Describe this image and provide any relevant information and identify harmful objects and point out: ", image])
